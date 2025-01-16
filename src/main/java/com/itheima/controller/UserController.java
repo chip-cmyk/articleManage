@@ -7,6 +7,7 @@ import com.itheima.utils.JwtUtil;
 import com.itheima.utils.Md5Util;
 import com.itheima.utils.ThreadLocalUtil;
 import jakarta.validation.constraints.Pattern;
+import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,12 +34,6 @@ public class UserController {
         }
     }
 
-    @PutMapping("/update")
-    public Result update(@RequestBody User user) {
-        userService.update(user);
-        return Result.success();
-    }
-
     @PostMapping("/login")
     public Result login(@Pattern(regexp = "^\\S{5,16}$", message = "用户名长度需要5-16位") String username, @Pattern(regexp = "^\\S{5,16}$", message = "密码长度需要5-16位") String password) {
         User loginUser = userService.findByUsername(username);
@@ -63,5 +58,17 @@ public class UserController {
         String username = map.get("username").toString();
         User user = userService.findByUsername(username);
         return Result.success(user);
+    }
+
+    @PutMapping("/update")
+    public Result update(@RequestBody @Validated User user) {
+        userService.update(user);
+        return Result.success();
+    }
+
+    @PatchMapping("/updateAvatar")
+    public Result updateAvatar(@RequestParam("avatarUrl") @URL String avatarUrl) {
+        userService.updateAvatar(avatarUrl);
+        return Result.success();
     }
 }
