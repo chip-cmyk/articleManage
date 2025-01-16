@@ -6,6 +6,7 @@ import com.itheima.service.UserService;
 import com.itheima.utils.JwtUtil;
 import com.itheima.utils.Md5Util;
 import com.itheima.utils.ThreadLocalUtil;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,28 @@ public class UserController {
     @PatchMapping("/updateAvatar")
     public Result updateAvatar(@RequestParam("avatarUrl") @URL String avatarUrl) {
         userService.updateAvatar(avatarUrl);
+        return Result.success();
+    }
+
+    @PatchMapping("/updatePwd")
+    public Result updatePwd(@RequestBody @Validated Map<String,
+            @Pattern(regexp = "^\\S{5,16}$", message = "密码长度需要 5-16 位，且不能包含空格") String> params) {
+        String oldPwd = params.get("old_pwd");
+        String newPwd = params.get("new_pwd");
+        String rePwd = params.get("re_pwd");
+
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String username = map.get("username").toString();
+        User user = userService.findByUsername(username);
+        if (!user.getPassword().equals(Md5Util.getMD5String(oldPwd))) {
+            return Result.error("原密码填写不正确");
+        }
+
+        if (!rePwd.equals(newPwd)) {
+            return Result.error("两次填写的密码不一致");
+        }
+
+        userService.updatePwd(newPwd);
         return Result.success();
     }
 }
