@@ -5,13 +5,11 @@ import com.itheima.pojo.User;
 import com.itheima.service.UserService;
 import com.itheima.utils.JwtUtil;
 import com.itheima.utils.Md5Util;
+import com.itheima.utils.ThreadLocalUtil;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +33,12 @@ public class UserController {
         }
     }
 
+    @PutMapping("/update")
+    public Result update(@RequestBody User user) {
+        userService.update(user);
+        return Result.success();
+    }
+
     @PostMapping("/login")
     public Result login(@Pattern(regexp = "^\\S{5,16}$", message = "用户名长度需要5-16位") String username, @Pattern(regexp = "^\\S{5,16}$", message = "密码长度需要5-16位") String password) {
         User loginUser = userService.findByUsername(username);
@@ -50,5 +54,14 @@ public class UserController {
         }
 
         return Result.error("密码错误");
+    }
+
+
+    @GetMapping("/userInfo")
+    public Result<User> userInfo() {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        String username = map.get("username").toString();
+        User user = userService.findByUsername(username);
+        return Result.success(user);
     }
 }
