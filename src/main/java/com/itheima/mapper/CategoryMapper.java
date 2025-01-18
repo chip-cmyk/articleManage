@@ -1,9 +1,7 @@
 package com.itheima.mapper;
 
 import com.itheima.pojo.Category;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -18,4 +16,10 @@ public interface CategoryMapper {
 
     @Select("select * from category where id=#{id} and create_user=#{createUserId}")
     Category findById(Integer id, Integer createUserId);
+
+    @Update("update category set category_name=#{category.categoryName}, category_alias=#{category.categoryAlias}, update_time=now() where id=#{category.id} and create_user=#{createUserId}")
+    Integer update(@Param("category") Category category, @Param("createUserId") Integer createUserId);
+
+    @Delete("delete from category where id=#{id}")
+    void delete(Integer id);
 }

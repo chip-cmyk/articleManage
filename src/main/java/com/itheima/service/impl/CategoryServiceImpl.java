@@ -35,4 +35,21 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryMapper.findById(id, createUserId);
         return category;
     }
+
+    @Override
+    public Integer update(Category category) {
+        Map<String, Object> map = ThreadLocalUtil.get();
+        Integer createUserId = ((Integer) map.get("id"));
+        try {
+            return categoryMapper.update(category, createUserId);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void delete(Integer id) {
+//        todo 还要把分类下的文章删除
+        categoryMapper.delete(id);
+    }
 }

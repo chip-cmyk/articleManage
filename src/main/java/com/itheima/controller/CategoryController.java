@@ -32,4 +32,25 @@ public class CategoryController {
         Category category = categoryService.findById(id);
         return Result.success(category);
     }
+
+    @PutMapping
+    public Result update(@RequestBody @Validated Category category) {
+        if (category.getId() == null) {
+            return Result.error("id不能为空");
+        }
+        if (categoryService.update(category) == 1) {
+            return Result.success();
+        }
+        return Result.error("更新失败或id不存在");
+    }
+
+    @DeleteMapping
+    public Result delete(@RequestParam Integer id) {
+        Category c = categoryService.findById(id);
+        if (c == null) {
+            return Result.error("不存在此分类");
+        }
+        categoryService.delete(id);
+        return Result.success();
+    }
 }
