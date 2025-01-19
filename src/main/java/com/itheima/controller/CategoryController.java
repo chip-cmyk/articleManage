@@ -41,14 +41,14 @@ public class CategoryController {
         if (categoryService.update(category) == 1) {
             return Result.success();
         }
-        return Result.error("更新失败或id不存在");
+        return Result.error("更新失败或id不存在/用户无权限");
     }
 
     @DeleteMapping
     public Result delete(@RequestParam Integer id) {
         Category c = categoryService.findById(id);
         if (c == null) {
-            return Result.error("不存在此分类");
+            return Result.error("不存在此分类或该用户无权限");
         }
         categoryService.delete(id);
         return Result.success();

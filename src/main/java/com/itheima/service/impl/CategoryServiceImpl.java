@@ -1,5 +1,6 @@
 package com.itheima.service.impl;
 
+import com.itheima.mapper.ArticleMapper;
 import com.itheima.mapper.CategoryMapper;
 import com.itheima.pojo.Category;
 import com.itheima.service.CategoryService;
@@ -14,6 +15,8 @@ import java.util.Map;
 public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryMapper categoryMapper;
+    @Autowired
+    private ArticleMapper articleMapper;
 
     @Override
     public void add(Category category) {
@@ -49,7 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(Integer id) {
-//        todo 还要把分类下的文章删除
+        articleMapper.deleteByCategoryId(id);
         categoryMapper.delete(id);
     }
 }
