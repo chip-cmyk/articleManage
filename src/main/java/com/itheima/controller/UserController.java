@@ -84,7 +84,7 @@ public class UserController {
 
     @PatchMapping("/updatePwd")
     public Result updatePwd(@RequestBody @Validated Map<String,
-            @Pattern(regexp = "^\\S{5,16}$", message = "密码长度需要 5-16 位，且不能包含空格") String> params, @RequestHeader("Authorization") Spring token) {
+            @Pattern(regexp = "^\\S{5,16}$", message = "密码长度需要 5-16 位，且不能包含空格") String> params) {
         String oldPwd = params.get("old_pwd");
         String newPwd = params.get("new_pwd");
         String rePwd = params.get("re_pwd");
