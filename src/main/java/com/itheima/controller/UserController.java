@@ -10,11 +10,15 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.ui.freemarker.SpringTemplateLoader;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/user")
@@ -23,6 +27,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     @PostMapping("/register")
     public Result register(@Pattern(regexp = "^\\S{5,16}$", message = "用户名长度需要5-16位") String username, @Pattern(regexp = "^\\S{5,16}$", message = "密码长度需要5-16位") String password) {
@@ -46,6 +53,8 @@ public class UserController {
             claims.put("id", loginUser.getId());
             claims.put("username", loginUser.getUsername());
             String token = JwtUtil.genToken(claims);
+
+            stringRedisTemplate.opsForValue().set(String.valueOf(loginUser.getId()), token, JwtUtil.EXPIRE_TIME, TimeUnit.MILLISECONDS);
             return Result.success(token);
         }
 
@@ -75,7 +84,7 @@ public class UserController {
 
     @PatchMapping("/updatePwd")
     public Result updatePwd(@RequestBody @Validated Map<String,
-            @Pattern(regexp = "^\\S{5,16}$", message = "密码长度需要 5-16 位，且不能包含空格") String> params) {
+            @Pattern(regexp = "^\\S{5,16}$", message = "密码长度需要 5-16 位，且不能包含空格") String> params, @RequestHeader("Authorization") Spring token) {
         String oldPwd = params.get("old_pwd");
         String newPwd = params.get("new_pwd");
         String rePwd = params.get("re_pwd");
@@ -92,6 +101,7 @@ public class UserController {
         }
 
         userService.updatePwd(newPwd);
+        stringRedisTemplate.opsForValue().getOperations().delete(String.valueOf(user.getId()));
         return Result.success();
     }
 }

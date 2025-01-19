@@ -1,9 +1,7 @@
 package com.itheima.mapper;
 
 import com.itheima.pojo.Article;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -17,4 +15,14 @@ public interface ArticleMapper {
     void deleteByCategoryId(Integer categoryId);
 
     List<Article> list(Integer userId, Integer categoryId, String state);
+
+    @Select("select * from article where id=#{id}")
+    Article findById(Integer id);
+
+    @Update("update article set title=#{title},content=#{content},cover_img=#{coverImg}, state=#{state}," +
+            "category_id=#{categoryId} where id=#{id}")
+    void update(Article article);
+
+    @Delete("delete from article where id=#{id}")
+    void delete(Integer id);
 }

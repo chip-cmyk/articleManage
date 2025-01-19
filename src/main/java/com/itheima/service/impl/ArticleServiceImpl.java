@@ -39,4 +39,20 @@ public class ArticleServiceImpl implements ArticleService {
 
         return pageBean;
     }
+
+    @Override
+    public Article findById(Integer id) {
+        Article article = articleMapper.findById(id);
+        return article;
+    }
+
+    @Override
+    public void update(Article article) {
+        articleMapper.update(article);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        articleMapper.delete(id);
+    }
 }
